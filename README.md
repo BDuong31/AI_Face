@@ -1,8 +1,8 @@
-# 🤖 AI-Face: Hệ Thống Điểm Danh Thông Minh Bằng Nhận Diện Khuôn Mặt
+# AI-Face: Hệ Thống Điểm Danh Thông Minh Bằng Nhận Diện Khuôn Mặt
 
 Một hệ thống điểm danh thông minh sử dụng công nghệ AI để nhận diện khuôn mặt và phát hiện giả mạo, được xây dựng với kiến trúc microservices.
 
-## 🏗️ Kiến Trúc Hệ Thống
+## Kiến Trúc Hệ Thống
 
 Hệ thống bao gồm 3 service chính:
 
@@ -13,9 +13,9 @@ AI-Face/
 └── cdcn_service/               # 🛡️ Anti-Spoofing Service (CDCN++)
 ```
 
-## 📦 Chi Tiết Các Service
+## Chi Tiết Các Service
 
-### 🌐 Face Web Service
+### Face Web Service
 
 **Công nghệ sử dụng:**
 - Backend: Flask + FastAPI (Python)
@@ -25,14 +25,14 @@ AI-Face/
 - Scheduling: APScheduler cho tự động hóa
 
 **Tính năng chính:**
-- ✅ Xác thực JWT cho sinh viên và giáo viên
-- ✅ Dashboard riêng cho từng vai trò
-- ✅ Quản lý lớp học và lịch học
-- ✅ Điểm danh tự động theo lịch trình
-- ✅ Điểm danh thủ công cho giáo viên
-- ✅ Thông báo real-time qua WebSocket
-- ✅ Quản lý phiên điểm danh với GPS validation
-- ✅ Báo cáo và thống kê điểm danh
+- Xác thực JWT cho sinh viên và giáo viên
+- Dashboard riêng cho từng vai trò
+- Quản lý lớp học và lịch học
+- Điểm danh tự động theo lịch trình
+- Điểm danh thủ công cho giáo viên
+- Thông báo real-time qua WebSocket
+- Quản lý phiên điểm danh với GPS validation
+- Báo cáo và thống kê điểm danh
 
 **API Endpoints:**
 ```
@@ -45,7 +45,7 @@ POST /api/teacher/classes/{id}/attendance/stop   # Kết thúc điểm danh
 POST /api/student/attendance     # Sinh viên điểm danh
 ```
 
-### 👤 Face Recognition Service
+### Face Recognition Service
 
 **Công nghệ sử dụng:**
 - Deep Learning: FaceNet (TensorFlow)
@@ -54,11 +54,11 @@ POST /api/student/attendance     # Sinh viên điểm danh
 - Framework: Flask
 
 **Tính năng chính:**
-- ✅ Phát hiện khuôn mặt với MTCNN (P-Net, R-Net, O-Net)
-- ✅ Trích xuất đặc trưng khuôn mặt với FaceNet
-- ✅ Nhận diện danh tính với SVM classifier
-- ✅ Xử lý từ camera hoặc upload ảnh
-- ✅ API RESTful cho integration
+- Phát hiện khuôn mặt với MTCNN (P-Net, R-Net, O-Net)
+- Trích xuất đặc trưng khuôn mặt với FaceNet
+- Nhận diện danh tính với SVM classifier
+- Xử lý từ camera hoặc upload ảnh
+- API RESTful cho integration
 
 **Models:**
 - **FaceNet**: Model pre-trained 20180402-114759.pb
@@ -71,7 +71,7 @@ POST /api/student/attendance     # Sinh viên điểm danh
 3. **Feature Extraction**: FaceNet tạo 128-dimensional embeddings
 4. **Classification**: SVM phân loại danh tính
 
-### 🛡️ CDCN Anti-Spoofing Service
+### CDCN Anti-Spoofing Service
 
 **Công nghệ sử dụng:**
 - Deep Learning: CDCN++ (Central Difference CNN)
@@ -79,18 +79,18 @@ POST /api/student/attendance     # Sinh viên điểm danh
 - Computer Vision: OpenCV
 
 **Tính năng chính:**
-- ✅ Phát hiện giả mạo khuôn mặt (Anti-Spoofing)
-- ✅ Central Difference Convolution layers
-- ✅ Spatial attention mechanisms
-- ✅ Binary mask prediction
-- ✅ Real-time processing
+- Phát hiện giả mạo khuôn mặt (Anti-Spoofing)
+- Central Difference Convolution layers
+- Spatial attention mechanisms
+- Binary mask prediction
+- Real-time processing
 
 **Model Architecture:**
 - **CDCN++**: Enhanced version với better feature extraction
 - **Binary Mask**: Phân biệt vùng thật/giả
 - **Spatial Attention**: Tập trung vào vùng quan trọng
 
-## 🚀 Cài Đặt và Chạy
+## Cài Đặt và Chạy
 
 ### Yêu Cầu Hệ Thống
 - Python 3.8+
@@ -165,24 +165,7 @@ python app.py
 
 Service chạy tại: http://localhost:5002
 
-## 🔄 Workflow Hoàn Chỉnh
-
-```mermaid
-graph TD
-    A[Sinh viên mở camera] --> B[Face Web Service]
-    B --> C[Gửi ảnh đến Recognition Service]
-    C --> D[MTCNN: Face Detection]
-    D --> E[FaceNet: Feature Extraction]
-    E --> F[SVM: Classification]
-    F --> G[Gửi ảnh đến CDCN Service]
-    G --> H[CDCN++: Anti-Spoofing Check]
-    H --> I{Khuôn mặt thật?}
-    I -->|Có| J[Lưu điểm danh thành công]
-    I -->|Không| K[Từ chối điểm danh]
-    J --> L[Cập nhật real-time qua WebSocket]
-```
-
-## 📊 Database Schema
+## Database Schema
 
 ```sql
 -- Sinh viên
@@ -210,7 +193,7 @@ attendance_sessions (id, sessionDate, isOpen, openedAt, closedAt, classId)
 attendance_records (id, attendanceTime, isPresent, latitude, longitude, sessionId, studentId)
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Test Face Recognition
 ```bash
@@ -225,7 +208,7 @@ cd cdcn_service
 python test_CDCN.py --gpu 0 --batchsize 9
 ```
 
-## 📈 Training Models
+## Training Models
 
 ### Train Face Recognition
 ```bash
@@ -246,7 +229,7 @@ cd cdcn_service
 python train_CDCN_tensorboardx.py --gpu 0 --batchsize 9 --epochs 60 --lr 0.00008
 ```
 
-## 🎯 Performance Metrics
+## Performance Metrics
 
 ### Face Recognition
 - **Accuracy**: ~95% trên dataset test
@@ -258,7 +241,7 @@ python train_CDCN_tensorboardx.py --gpu 0 --batchsize 9 --epochs 60 --lr 0.00008
 - **EER**: 1.5%
 - **Processing Time**: ~150ms per image
 
-## 🔧 API Documentation
+## API Documentation
 
 ### Face Recognition API
 ```bash
@@ -287,7 +270,7 @@ Response:
 }
 ```
 
-## 🛠️ Development
+## Development
 
 ### Project Structure
 ```
@@ -312,17 +295,9 @@ AI-Face/
     └── CDCNpp_BinaryMask_P1_07/  # Model checkpoints
 ```
 
-## 📝 Changelog
+## Changelog
 
-### Version 1.0.0
-- ✅ Hoàn thiện 3 services chính
-- ✅ Web interface cho sinh viên và giáo viên
-- ✅ Real-time attendance tracking
-- ✅ Automatic scheduling system
-- ✅ GPS-based location validation
-- ✅ Anti-spoofing integration
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the project
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -330,15 +305,7 @@ AI-Face/
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👥 Authors
-
-- **Bùi Dương** - *Initial work* - [bduong]
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - FaceNet paper and implementation
 - MTCNN for face detection
@@ -347,5 +314,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Flask and FastAPI frameworks
 
 ---
-
-**📞 Support**: Liên hệ qua email hoặc tạo issue trên GitHub nếu bạn gặp vấn đề.
