@@ -1,0 +1,159 @@
+# AI-Face Project .gitignore
+
+# ========================================
+# Python
+# ========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ========================================
+# Virtual Environments
+# ========================================
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ========================================
+# IDE và Editors
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================================
+# OS Files
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ========================================
+# Database
+# ========================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ========================================
+# Models và Datasets (Large Files)
+# ========================================
+# Pre-trained models (quá lớn cho GitHub)
+face_recognition_service/Models/*.pb
+face_recognition_service/Models/*.pkl
+face_recognition_service/Models/*.npy
+
+# CDCN model checkpoints (quá lớn)
+cdcn_service/CDCNpp_BinaryMask_P1_07/*.pkl
+cdcn_service/CDCNpp_BinaryMask_P1_07/*.pth
+
+# Dataset files
+face_recognition_service/Dataset/
+cdcn_service/datamain/
+*/Dataset/
+*/dataset/
+*/data/
+
+# ========================================
+# Logs và Temp Files
+# ========================================
+*.log
+logs/
+face_recognition_service/logs/
+cdcn_service/logs/
+temp/
+tmp/
+
+# ========================================
+# Node.js (cho Prisma)
+# ========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ========================================
+# Environment Variables
+# ========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ========================================
+# Docker
+# ========================================
+.dockerignore
+
+# ========================================
+# Prisma
+# ========================================
+face_web/prisma/migrations/
+
+# ========================================
+# Generated Files
+# ========================================
+face_web/generated/
+
+# ========================================
+# Video Files (Test Data)
+# ========================================
+*.mp4
+*.avi
+*.mov
+*.mkv
+face_recognition_service/video/
+
+# ========================================
+# Jupyter Notebooks
+# ========================================
+.ipynb_checkpoints
+
+# ========================================
+# TensorFlow/PyTorch
+# ========================================
+*.pb
+*.pth
+*.ckpt
+*.meta
+*.index
+*.data-*
+
+# ========================================
+# Specific Project Files
+# ========================================
+# Chỉ ignore các file model lớn, giữ lại cấu trúc thư mục
+!face_recognition_service/Models/.gitkeep
+!cdcn_service/CDCNpp_BinaryMask_P1_07/.gitkeep
+!face_recognition_service/Dataset/.gitkeep

@@ -1,0 +1,85 @@
+body { 
+    font-family: 'Inter', sans-serif; 
+    -webkit-font-smoothing: antialiased; 
+    -moz-osx-font-smoothing: grayscale; 
+}
+.smooth-transition { 
+    transition: all 0.3s ease-in-out; 
+}
+.stat-card:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+}
+.modal-overlay { 
+    opacity: 0; 
+    visibility: hidden; 
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; 
+}
+.modal-overlay.active { 
+    opacity: 1; 
+    visibility: visible; 
+}
+.modal-content { 
+    transform: scale(0.95); 
+    opacity: 0; 
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; 
+}
+.modal-overlay.active .modal-content { 
+    transform: scale(1); 
+    opacity: 1; 
+}
+.camera-view { 
+    width: 100%; 
+    max-width: 480px; 
+    height: 360px; 
+    background-color: #1a202c; 
+    border: 1px solid #4a5568; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: #a0aec0; 
+    font-size: 1.1rem; 
+    border-radius: 0.5rem; 
+    margin-left: auto; 
+    margin-right: auto; 
+    overflow: hidden; 
+}
+.camera-view video { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+.daily-class-item { 
+    cursor: pointer; 
+}
+.current-class-highlight { 
+    border: 2px solid #4f46e5; 
+}
+.attendance-action-container { 
+    max-height: 0; 
+    overflow: hidden; 
+    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.3s ease-in-out; 
+    opacity: 0; 
+    margin-top: 0; 
+}
+.daily-class-item.expanded .attendance-action-container { 
+    max-height: 200px; 
+    opacity: 1; 
+    margin-top: 0.75rem; 
+}
+/* SVG Logo Styles */
+.cls-3{
+    fill: #E6EBF1;
+}
+.cls-4{
+    fill: #ebc94c;
+}
+.cls-5{
+    stroke: #ebc94c;
+    stroke-miterlimit: 10;
+    stroke-width: 1.5px;
+    fill: none;
+}
+video {
+    transform: scaleX(-1); /* Lật video để có hiệu ứng gương soi */
+}

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="../static/css/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Dashboard</title>
+</head>
+
+<body>
+  <header>
+    <h1 id="teacherName">Tên Giáo Viên</h1>
+    <div style="display: flex; gap: 20px">
+        <h2>Lớp: <span id="className"></span></h2>
+        <h2>|</h2>
+        <h2>Phòng: <span id="classRoom"></span></h2>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="side-nav">
+      <ul>
+        <li>
+          <input type="checkbox" id="tags-toggle" onclick="toggleDropdown(event)">
+          <label for="tags-toggle">Lớp</label>
+          <ul id="class" class="dropdown">
+              <!-- <li>
+                <label for="class" onclick=""> 010100087204 - Lập trình Python </label>
+              </li>
+              <li>
+                <label for="class" onclick=""> 010100085003 - Phân tích và thiết kế thuật giải </label>
+              </li>
+              <li>
+                <label for="class" onclick=""> IDClass -  NameClass </label>
+              </li> -->
+          </ul>
+        </li>
+        <li><a href="teacher_dashboard/logout">Đăng xuất</a></li>
+      </ul>
+    </div>
+    <div class="main-content">
+        <div>
+            <select id="week">
+              <option value="">chưa chọn lớp</option>
+              <!-- <option>Tuần 1</option>
+              <option>Tuần 1</option>
+              <option>Tuần 1</option> -->
+            </select>
+        </div>
+        <div>
+          <h2 style="margin-left: 15px">Danh sách sinh viên</h2>
+          <div class="table_student">
+              <table id="liststudent">
+                  <thead>
+                      <tr>
+                          <th style="width: 15%;">MSSV</th>
+                          <th style="width: 25%;">Họ tên</th>
+                          <th style="width: 10%">Điểm danh</th>
+                          <th style="width: 10%;">Thao tác</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+              </table>
+          </div>
+        </div>
+        </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Hệ Thống Điểm Danh</p>
+    <link href="../stactic/js/scripts.js">
+  </footer>
+
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <script>
+function toggleAttendanceMenu(element) {
+  // Tìm phần tử chứa menu điểm danh tương ứng với dòng hiện tại
+  const menu = element.closest('td').querySelector('.attendance-menu');
+  
+  // Kiểm tra nếu menu đang hiển thị, thì ẩn nó, ngược lại thì hiển thị
+  if (menu.style.display === "block") {
+    menu.style.display = "none";
+    document.removeEventListener('click', handleOutsideClick);
+  } else {
+    menu.style.display = "block";
+    document.addEventListener('click', handleOutsideClick);
+  }
+
+  function handleOutsideClick(event) {
+    if (!menu.contains(event.target) && event.target !== element) {
+      menu.style.display = "none";
+      document.removeEventListener('click', handleOutsideClick);
+    }
+  }
+}
+
+    const checkboxs = document.querySelectorAll('.side-nav input[type="checkbox"]');
+
+    checkboxs.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const liElement = this.closest('li');
+            console.log(liElement.classList);
+
+            if (this.checked) {
+                liElement.classList.add('checked');
+            } else {
+                liElement.classList.remove('checked');
+            }
+        });
+    });
+    function toggleDropdown(event) {
+        const checkboxes = document.querySelectorAll('.side-nav input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            const liElement = checkbox.closest('li');
+            console.log(liElement)
+            if (checkbox !== event.target) {
+                checkbox.checked = false;
+                liElement.classList.remove('checked');
+            }
+            else {
+                liElement.classList.add('checked');
+            }
+        });
+    }
+
+    function updateStatus(status) {
+              // Bạn có thể sử dụng status (attendance/absent) để thay đổi trạng thái
+              const newStatus = status;
+              updateAttendance(student.MSSV, newStatus, student.class_id);
+    }
+    const socket = io();
+    const teacherInfo = JSON.parse(sessionStorage.getItem("teacherInfo"));
+    console.log("Teacher Info:", teacherInfo); // Kiểm tra thông tin giáo viên
+
+    if (teacherInfo && teacherInfo.teacher_id) {
+      document.getElementById("teacherName").innerText = teacherInfo.name;
+      document.getElementById("className").innerText = "";
+      loadClasses(teacherInfo.teacher_id);
+    } else {
+      console.error(
+        "Teacher ID is undefined or teacherInfo is not available."
+      );
+    }
+
+    function loadClasses(teacherId) {
+      fetch(`/get_classes?teacher_id=${teacherId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Classes data:", data);
+          const classList = document.getElementById("class");
+          console.log(classList);
+          classList.innerHTML = "";
+          data.classes.forEach((i) => {
+            const listItem = document.createElement('li');
+        
+            // Tạo phần tử label và thêm vào listItem
+            const label = document.createElement('label');
+            label.setAttribute('for', 'class');
+            label.id = `${i.id_class}`;
+            label.innerText = `${i.id_class} - ${i.name}`;
+
+
+            label.onclick = () => {
+              //loadStudents(i.id_class, null);
+              loadWeeks(i.id_class); // Gọi hàm loadWeeks khi chọn lớp
+              document.getElementById("className").innerText = i.name; // Cập nhật tên lớp
+              document.getElementById("classRoom").innerText = i.room; // Cập nhật phòng
+            };
+            // Gắn label vào listItem
+            listItem.appendChild(label);
+
+            // Thêm listItem vào classList
+            classList.appendChild(listItem);
+          });
+        });
+    }
+
+    function loadWeeks(classId) {
+      fetch(`/get_weeks?class_id=${classId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Weeks data:", data);
+          const weekSelect = document.getElementById("week");
+          weekSelect.classId = classId;
+          weekSelect.innerHTML = ""; // Clear previous data
+          if (data.success) {
+            data.weeks.forEach((week, index) => {
+              const option = document.createElement("option");
+              option.value = week.value;
+              option.id = classId;
+              const dateParts = week.value.split('-');
+              option.textContent = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+              weekSelect.appendChild(option);
+
+              // Automatically select the first week and load students
+              if (index === 0) {
+                console.log("Selected week:", week.value);
+                weekSelect.value = week.value;
+                loadStudents(classId, week.value);
+              }
+            });
+          }
+        });
+    }
+
+document.getElementById("week").addEventListener("change", function() {
+  const classId = document.getElementById("class").querySelector("label[for='class']").innerText.split(" - ")[0];
+  const weekValue = this.value;
+  loadStudents(this.classId, weekValue);
+});
+
+function loadStudents(classId, weekValue) {
+  let url = `/get_students?class_id=${classId}`;
+  if (weekValue) {
+    url += `&week=${weekValue}`;
+  }
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      const studentTableBody = document
+        .getElementById("liststudent")
+        .getElementsByTagName("tbody")[0];
+      studentTableBody.innerHTML = ""; // Clear previous data
+      data.students.forEach((student) => {
+        const row = studentTableBody.insertRow();
+        row.insertCell(0).innerText = student.MSSV;
+        row.insertCell(1).innerText = student.name;
+
+        if (student.status == "Absent"){
+            row.insertCell(2).innerHTML = '<i class="icon-cancel"></i>';
+        } else {
+          row.insertCell(2).innerHTML = '<i class="icon-tick"></i>';
+        }
+
+        // Add update button
+        const actionCell = row.insertCell(3);
+        const updateButton = document.createElement('div');
+        updateButton.style.position = 'relative';
+        updateButton.style.display = 'inline-flex';
+        updateButton.style.alignItems = 'center';
+        updateButton.innerHTML = `                              
+                          <i class="icon-edit" onclick="toggleAttendanceMenu(this)"></i>
+                          <div class="attendance-menu" style="display: none;">
+                            <ul>
+                              <li value="present" onclick="updateAttendance('${student.MSSV}', 'Present', '${classId}', '${student.date}', this)">Điểm danh</li>
+                              <li value="absent" onclick="updateAttendance('${student.MSSV}', 'Absent', '${classId}', '${student.date}', this)">Chưa điểm danh</li>
+                            </ul>
+                          </div>
+        
+        `;
+
+        actionCell.appendChild(updateButton);
+      });
+    });
+}
+    function updateAttendance(mssv, status, classId, date, element) {
+      const formattedDate = new Date(date).toISOString().split('T')[0];
+      fetch("/update_attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          MSSV: mssv,
+          status: status,
+          class_id: classId,
+          date: formattedDate,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            console.log("Attendance updated successfully");
+            const row = element.closest('tr');
+            const statusCell = row.cells[2];
+            if (status === 'Absent') {
+              statusCell.innerHTML = '<i class="icon-cancel"></i>';
+            } else {
+              statusCell.innerHTML = '<i class="icon-tick"></i>';
+            }
+          } else {
+            console.error("Error updating attendance");
+          }
+        });
+    }
+
+    socket.on("response", function (data) {
+      if (data.message) {
+        showNotification(data.message);
+        mssv = data.MSSV;
+        status = "Present";
+        classId = data.classId;
+        date = data.date;
+        updateAttendance(mssv, status, classId, date, "");
+      }
+    });
+
+    function showNotification(message) {
+      const notification = document.createElement("div");
+      notification.className = "notification";
+      notification.innerText = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 5000); // Thời gian hiển thị 5 giây
+    }
+  </script>
+</body>
+
+</html>

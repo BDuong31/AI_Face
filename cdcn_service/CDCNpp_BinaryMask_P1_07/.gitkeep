@@ -1,0 +1,16 @@
+# Placeholder for CDCN++ Model Checkpoints
+# This directory contains trained CDCN++ model checkpoints
+
+## Model Files:
+- `CDCNpp_BinaryMask_P1_07_XX.pkl` - Model checkpoints (where XX is epoch number)
+- `CDCNpp_BinaryMask_P1_07_log.txt` - Training logs
+- `CDCNpp_BinaryMask_P1_07_map_score_*.txt` - Performance metrics
+
+## Training:
+Use the provided training script to generate these checkpoints:
+```bash
+python train_CDCN_tensorboardx.py --gpu 0 --batchsize 9 --epochs 60 --lr 0.00008
+```
+
+## Model Size:
+Each checkpoint is approximately 50-100MB

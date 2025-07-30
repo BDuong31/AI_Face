@@ -1,0 +1,8 @@
+Oulu-NPU, P1:
+ train from scratch!
+epoch:1, Train: Absolute_Depth_loss= 0.3729, Contrastive_Depth_loss= 0.0485 
+epoch:2, Train: Absolute_Depth_loss= 0.2469, Contrastive_Depth_loss= 0.0237 
+epoch:3, Train: Absolute_Depth_loss= 0.1704, Contrastive_Depth_loss= 0.0233 
+epoch:4, Train: Absolute_Depth_loss= 0.1465, Contrastive_Depth_loss= 0.0206 
+epoch:5, Train: Absolute_Depth_loss= 0.1354, Contrastive_Depth_loss= 0.0205 
+epoch:6, Train: Absolute_Depth_loss= 0.1281, Contrastive_Depth_loss= 0.0195 

@@ -1,0 +1,104 @@
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Common Classes */
+.smooth-transition {
+    transition: all 0.3s ease-in-out;
+}
+
+.section-card {
+    @apply bg-white shadow-lg rounded-xl p-6 md:p-8 mb-10;
+}
+
+.section-title {
+    @apply text-2xl font-semibold text-slate-800 mb-6;
+}
+
+.nav-link {
+    @apply text-gray-600 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium smooth-transition;
+}
+
+.mobile-nav-link {
+    @apply text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium smooth-transition;
+}
+
+.table-header {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.action-button {
+    @apply inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-base font-medium rounded-md text-white smooth-transition;
+}
+
+/* Stat Card Hover Effect */
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* slate-300 */
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* slate-400 */
+}
+
+/* Helper class for truncating long text in table cells */
+.table-cell-truncate {
+    max-width: 150px; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+.modal-content {
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.modal-overlay.active .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* Loading Spinner */
+.loader {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3b82f6; /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.toast {
+  /* Các thuộc tính hiện tại của bạn */
+  
+  /* ----> THÊM DÒNG NÀY <---- */
+  /* Hiệu ứng chuyển động cho vị trí và độ trong suốt trong 0.5 giây */
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}

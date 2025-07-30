@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../static/css/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard</title>
+  </head>
+
+  <body>
+    <header class="header_sd">
+      <div style="width: 100%">
+        <div class="header-left">
+          <h1 id="studentName">Tên Sinh Viên</h1>
+          <h2 id="MSSV">Mã số sinh viên</h2>
+        </div>
+        <div class="header-right">
+          <button style="float: right" id="logout-button">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="logout-icon"
+            >
+              <path
+                fill="white"
+                d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5v-2H5V5h5V3zm4.59 4.41L13.17 9H20v2h-6.83l1.42 1.59L14 14l-4-4 4-4 1.59 1.41z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div style="width: 100%" class="main-content">
+        <div class="schedule-container">
+          <h2 class="title_sd"><b>Lịch học, lịch thi theo tuần</b></h2>
+          <div class="options">
+            <button class="btn_sd">< Trở về</button>
+            <input type="date" class="date-input" />
+            <button class="btn_sd">Tiếp ></button>
+          </div>
+          <table class="schedule-table">
+            <thead>
+              <tr class="tr_sd">
+                <th>Ca học</th>
+                <th>Thứ 2<br /></th>
+                <th>Thứ 3<br /></th>
+                <th>Thứ 4<br /></th>
+                <th>Thứ 5<br /></th>
+                <th>Thứ 6<br /></th>
+                <th>Thứ 7<br /></th>
+                <th>Chủ nhật<br /></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td_ca"><b>Sáng</b></td>
+                <td>
+                  <div class="class-box">
+                    <div>
+                      <strong>Phân tích và thiết kế thuật giải</strong><br />
+                      23DHTT01 - 010100085401<br />
+                      Tiết: 1 - 4<br />
+                      Giờ: 07:00 - 10:35<br />
+                      Phòng: G601<br />
+                      GV: Nguyễn Thị Ngọc Thanh
+                    </div>
+                    <div class="icon-camera" onclick="openCamera(this)">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="td_ca"><b>Chiều</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="td_ca"><b>Tối</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2024 Hệ Thống Điểm Danh</p>
+      <link href="../stactic/js/scripts.js" />
+    </footer>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+      function updateAttendance(mssv, status, classId, date, element) {
+        const formattedDate = new Date(date).toISOString().split("T")[0];
+        fetch("/update_attendance", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            MSSV: mssv,
+            status: status,
+            class_id: classId,
+            date: formattedDate,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              console.log("Attendance updated successfully");
+              const row = element.closest("tr");
+              const statusCell = row.cells[2];
+              if (status === "Absent") {
+                statusCell.innerHTML = '<i class="icon-cancel"></i>';
+              } else {
+                statusCell.innerHTML = '<i class="icon-tick"></i>';
+              }
+            } else {
+              console.error("Error updating attendance");
+            }
+          });
+      }
+
+      const socket = io();
+
+      // Gọi API cam python
+      async function openCamera(classId, date, element) {
+        try {
+          socket.on("response", function (data) {
+            if (data.message) {
+              console.log("Attendance marked successfully.");
+              element.innerHTML = "";
+              element.classList.add("icon-tick");
+              mssv = data.MSSV;
+              status = "Present";
+              classId = data.classId;
+              date = data.date;
+              updateAttendance(mssv, status, classId, date, "");
+              socket.emit("stop_camera", { success: true });
+            } else {
+              console.error("Attendance marking failed:", response.message);
+            }
+          });
+          // Gọi API để mở camera
+          const response = await fetch("/open_camera", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              classId,
+              date,
+            }),
+          });
+          const data = await response.json();
+          console.log("Camera opened successfully.");
+          // Lắng nghe sự kiện từ socket
+        } catch (error) {
+          console.error("Lỗi khi mở camera:", error);
+        }
+      }
+
+      function showNotification(message) {
+        const notification = document.createElement("div");
+        notification.className = "notification";
+        notification.innerText = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+        }, 5000); // Thời gian hiển thị 5 giây
+      }
+
+      // hiện tên và mssv
+      const studentInfo = JSON.parse(sessionStorage.getItem("studentInfo"));
+      console.log("student Info:", studentInfo); // Kiểm tra thông tin sinh viên
+
+      if (studentInfo && studentInfo.student_id) {
+        document.getElementById("studentName").innerText = studentInfo.name;
+        document.getElementById("MSSV").innerText = studentInfo.student_id;
+      } else {
+        console.error(
+          "Student ID is undefined or teacherInfo is not available."
+        );
+      }
+
+      // đăng xuất
+      document
+        .getElementById("logout-button")
+        .addEventListener("click", function () {
+          sessionStorage.removeItem("studentInfo");
+          window.location.href = "../";
+        });
+
+      // ngày
+      document.addEventListener("DOMContentLoaded", function () {
+        const dateInput = document.querySelector(".date-input");
+        const btnPrev = document.querySelector(".btn_sd:first-child");
+        const btnNext = document.querySelector(".btn_sd:last-child");
+
+        // Khởi tạo ngày hiện tại
+        const today = new Date();
+        dateInput.value = formatDateForInput(today);
+
+        // Cập nhật lịch khi vào trang
+        updateSchedule(new Date(dateInput.value));
+
+        // Gắn sự kiện cho nút "Trở về"
+        btnPrev.addEventListener("click", function () {
+          adjustWeek(-7); // Lùi 1 tuần
+        });
+
+        // Gắn sự kiện cho nút "Tiếp"
+        btnNext.addEventListener("click", function () {
+          adjustWeek(7); // Tăng 1 tuần
+        });
+
+        // Hàm điều chỉnh tuần
+        function adjustWeek(days) {
+          const currentDate = new Date(dateInput.value); // Ngày hiện tại trong input
+          currentDate.setDate(currentDate.getDate() + days); // Điều chỉnh số ngày
+          dateInput.value = formatDateForInput(currentDate); // Cập nhật giá trị input
+          updateSchedule(currentDate); // Cập nhật bảng lịch
+        }
+
+        // Hàm định dạng ngày cho input (YYYY-MM-DD)
+        function formatDateForInput(date) {
+          const day = String(date.getDate()).padStart(2, "0");
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const year = date.getFullYear();
+          return `${year}-${month}-${day}`;
+        }
+
+        dateInput.addEventListener("change", function () {
+          const selectedDate = new Date(this.value);
+          if (isNaN(selectedDate)) {
+            console.error("Ngày không hợp lệ:", this.value);
+            return;
+          }
+          updateSchedule(selectedDate);
+        });
+
+        // Hàm định dạng ngày cho bảng (DD-MM-YYYY)
+        function formatDateForTable(date) {
+          const day = String(date.getDate()).padStart(2, "0");
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const year = date.getFullYear();
+          return `${day}/${month}/${year}`;
+        }
+
+        function updateSchedule(baseDate) {
+          if (isNaN(baseDate)) {
+            console.error("Ngày không hợp lệ:", baseDate);
+            return;
+          }
+
+          const dayOfWeek = baseDate.getDay(); // Lấy thứ (0: CN, 6: T7)
+          const startOfWeek = new Date(baseDate);
+
+          // Tính ngày Thứ 2 đầu tuần
+          startOfWeek.setDate(
+            baseDate.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)
+          );
+
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+          // Lấy các tiêu đề của bảng
+          const headers = document.querySelectorAll(".schedule-table thead th");
+
+          if (headers.length < 8) {
+            console.error("Cấu trúc bảng lịch không đủ cột tiêu đề");
+            return;
+          }
+
+          // Cập nhật nội dung các ô tiêu đề
+          for (let i = 1; i <= 7; i++) {
+            const currentDay = new Date(startOfWeek);
+            currentDay.setDate(startOfWeek.getDate() + (i - 1));
+            headers[i].innerHTML = `Thứ ${i + 1}<br>${formatDateForTable(
+              currentDay
+            )}`;
+          }
+          const scheduleTableBody = document.querySelector(
+            ".schedule-table tbody"
+          );
+          scheduleTableBody.innerHTML = ""; // Xóa nội dung cũ
+
+          console.log(studentInfo.student_id, startOfWeek, endOfWeek);
+          // Gọi API để lấy lịch học, lịch thi
+          fetch("/weekly_schedule", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              studentId: studentInfo.student_id,
+              startDate: startOfWeek.toISOString().split("T")[0],
+              endDate: endOfWeek.toISOString().split("T")[0],
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                console.log("Lịch học:", data.schedule);
+
+                // Lặp qua từng buổi (Sáng, Chiều, Tối)
+                ["Sáng", "Chiều", "Tối"].forEach((period) => {
+                  const row = document.createElement("tr");
+                  row.innerHTML = `<td class="td_ca"><b>${period}</b></td>`;
+
+                  // Lặp qua từng ngày trong tuần (Thứ 2 -> Chủ nhật)
+                  for (let i = 0; i < 7; i++) {
+                    const currentDay = new Date(startOfWeek);
+                    currentDay.setDate(startOfWeek.getDate() + i);
+                    const dayString = currentDay.toISOString().split("T")[0];
+
+                    console.log("Ngày hiện tại:", dayString);
+
+                    // Lấy dữ liệu theo ngày và buổi
+                    const classes = data.schedule.filter(
+                      (cls) => cls.date === dayString && cls.period === period
+                    );
+
+                    if (classes.length > 0) {
+                      const classInfo = classes
+                        .map(
+                          (cls) => `
+                            <div class="class-box">
+                              <div>
+                                <strong>${cls.name}</strong><br />
+                                ${cls.classId}<br />
+                                Tiết: ${cls.startPeriod} - ${
+                            cls.endPeriod
+                          }<br />
+                                Giờ: ${cls.startTime} - ${cls.endTime}<br />
+                                Phòng: ${cls.room}<br />
+                                GV: ${cls.teacher}
+                              </div>
+                              ${
+                                cls.status === "Absent"
+                                  ? `<div class="icon-camera" onclick="openCamera('${cls.classId}', '${cls.date}', this)">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    class="size-6"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
+                                    />
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
+                                    />
+                                  </svg>
+                                </div>`
+                                  : `<div style="" class="icon-camera icon-tick"></div>`
+                              }
+                            </div>
+                          `
+                        )
+                        .join("");
+                      row.innerHTML += `<td>${classInfo}</td>`;
+                    } else {
+                      row.innerHTML += `<td></td>`;
+                    }
+                  }
+
+                  scheduleTableBody.appendChild(row);
+                });
+              } else {
+                console.error("Không thể lấy lịch học:", data.message);
+              }
+            })
+            .catch((error) => {
+              console.error("Lỗi khi lấy lịch học, lịch thi:", error);
+            });
+        }
+      });
+    </script>
+  </body>
+</html>
