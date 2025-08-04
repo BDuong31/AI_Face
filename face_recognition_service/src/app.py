@@ -47,10 +47,10 @@ PKL_MODEL_FILE = MODELS_DIR / 'facemodel.pkl'
 
 print(BASE_DIR)
 # Ensure these paths are correct relative to where you run the Flask app
-CLASSIFIER_PATH = '/Users/bduong/Documents/AI-Face/face_recognition_service/Models/facemodel.pkl'
-FACENET_MODEL_PATH = '/Users/bduong/Documents/AI-Face/face_recognition_service/Models/20180402-114759.pb'
+CLASSIFIER_PATH = r'C:\Users\ASUS\Desktop\AI_Face\face_recognition_service\Models\facemodel.pkl'
+FACENET_MODEL_PATH = r'C:\Users\ASUS\Desktop\AI_Face\face_recognition_service\Models\20180402-114759.pb'
 # ### DEBUG ###: Verify this directory and its contents
-MTCNN_MODEL_DIR = '/Users/bduong/Documents/AI-Face/face_recognition_service/src/align'
+MTCNN_MODEL_DIR = r'C:\Users\ASUS\Desktop\AI_Face\face_recognition_service\src\align'
 print(f"### DEBUG ###: Kiểm tra thư mục: {MTCNN_MODEL_DIR}")
 if not os.path.isdir(MTCNN_MODEL_DIR):
     print(f"### DEBUG ###: ERROR - MTCNN_MODEL_DIR không tồn tại hoặc không phải là thư mục!")

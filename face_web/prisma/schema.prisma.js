@@ -1,7 +1,7 @@
 // Prisma schema for AI-Face application
 
-generator py {
-  provider = "prisma-client-py"
+generator client {
+  provider = "prisma-client-js"
 }
 
 datasource db {

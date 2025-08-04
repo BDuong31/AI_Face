@@ -157,3 +157,12 @@ face_recognition_service/video/
 !face_recognition_service/Models/.gitkeep
 !cdcn_service/CDCNpp_BinaryMask_P1_07/.gitkeep
 !face_recognition_service/Dataset/.gitkeep
+
+
+CDCNpp_BinaryMask_P1_07_30.pkl
+cdcn_service/models
+
+Dataset
+Models
+
+pakage-lock.json

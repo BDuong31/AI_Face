@@ -4,3 +4,5 @@ venv/
 
 src/.env
 
+face_recognition_service/Dataset/
+

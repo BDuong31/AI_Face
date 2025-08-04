@@ -123,7 +123,7 @@ SECRET_KEY="your-secret-key-here"
 cd face_web
 
 # Cài đặt Python dependencies
-pip install flask flask-cors prisma python-dotenv asyncio nest-asyncio jwt starlette apscheduler
+pip install flask flask-cors prisma python-dotenv asyncio nest-asyncio jwt starlette apscheduler asgiref
 
 # Cài đặt và generate Prisma client
 npm install
@@ -161,6 +161,10 @@ pip install -r requirements.txt
 
 # Chạy service
 python app.py
+
+gunicorn -w 1 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:3000 --reload app:app
+
+uvicorn app:app --host 0.0.0.0 --port 3000 --reload
 ```
 
 Service chạy tại: http://localhost:5002
@@ -314,3 +318,82 @@ AI-Face/
 - Flask and FastAPI frameworks
 
 ---
+
+
+
+
+---------------
+python -m venv venv
+venv\Scripts\activate
+pip freeze > requirements.txt
+pip install -r requirements.txt
+
+
+pnpx prisma studio
+ localhost:5555 
+
+
+
+
+------------------------- 
+Chi tiết bước cài đặt database PostgreSQL và Prisma ORM:
+
+cd face_web
+
+# Dừng và xóa container hiện tại
+docker-compose down
+
+# Xóa volume để đảm bảo không còn dữ liệu cũ
+docker volume rm face_web_postgres_data
+
+# Khởi động lại container
+docker-compose up -d
+
+# Kiểm tra trạng thái container
+docker ps
+
+# Cài đặt phiên bản prisma cụ thể để tránh lỗi
+npm install prisma@5.17.0
+
+# Generate Prisma client
+npx prisma@5.17.0 generate
+
+# Push schema lên database
+npx prisma@5.17.0 db push
+
+
+# xem các bảng 
+docker exec -it db_postgres psql -U user_attendance -d attendance_db -c "\dt"
+
+
+Get-Content "c:\Users\ASUS\Desktop\AI_Face\face_web\fix_permissions.sql" | docker exec -i db_postgres psql -U user_attendance -d attendance_db
+
+
+
+PS C:\Users\ASUS\Desktop\AI_Face\face_web> npx prisma studio
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Prisma Studio is up on http://localhost:5555
+
+
+npx prisma migrate dev --name init
+
+# rebuild docker containers
+docker-compose down -v
+docker-compose up --build
+
+
+
+docker exec -it db_postgres psql -U user_attendance -d attendance_db
+# Xem các bảng trong database
+\dt
+
+SELECT * FROM students;
+# Xem dữ liệu trong bảng students
+
+\d students
+# Xem cấu trúc bảng students
+
+python -m prisma generate
+
+http://localhost:3000/

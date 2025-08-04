@@ -1,4 +1,6 @@
-// Prisma schema for AI-Face application
+// generator client {
+//   provider = "prisma-client-js"
+// }
 
 generator py {
   provider = "prisma-client-py"
@@ -9,7 +11,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Models
+// =============================================
+// Định nghĩa các Models (Đã sửa lỗi tên)
+// =============================================
 
 model Student {
   id                String             @id @default(cuid())
@@ -30,7 +34,7 @@ model Teacher {
   password    String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  classes     CourseClass[]
+  classes     CourseClass[] // <-- Đã cập nhật
   @@map("teachers")
 }
 
@@ -39,10 +43,12 @@ model Course {
   courseCode  String        @unique
   courseName  String
   description String?
-  classes     CourseClass[]
+  classes     CourseClass[] // <-- Đã cập nhật
   @@map("courses")
 }
 
+// === THAY ĐỔI LỚN Ở ĐÂY ===
+// Đổi tên model từ "Class" thành "CourseClass"
 model CourseClass {
   id                 String              @id @default(cuid())
   classCode          String              @unique
@@ -55,7 +61,7 @@ model CourseClass {
   enrollments        Enrollment[]
   schedules          ClassSchedule[]
   attendanceSessions AttendanceSession[]
-  @@map("classes")
+  @@map("classes") // Giữ nguyên tên bảng trong CSDL là "classes"
 }
 
 model Enrollment {
@@ -64,7 +70,7 @@ model Enrollment {
   studentId      String
   classId        String
   student        Student     @relation(fields: [studentId], references: [id])
-  course_class   CourseClass @relation(fields: [classId], references: [id])
+  course_class   CourseClass @relation(fields: [classId], references: [id]) // <-- Đổi tên trường "class"
   @@unique([studentId, classId])
   @@map("enrollments")
 }
@@ -76,7 +82,7 @@ model ClassSchedule {
   endTime      String
   room         String?
   classId      String
-  course_class CourseClass @relation(fields: [classId], references: [id])
+  course_class CourseClass @relation(fields: [classId], references: [id]) // <-- Đổi tên trường "class"
   @@map("class_schedules")
 }
 
@@ -87,7 +93,7 @@ model AttendanceSession {
   openedAt     DateTime?
   closedAt     DateTime?
   classId      String
-  course_class CourseClass        @relation(fields: [classId], references: [id])
+  course_class CourseClass        @relation(fields: [classId], references: [id]) // <-- Đổi tên trường "class"
   records      AttendanceRecord[]
   @@unique([classId, sessionDate])
   @@map("attendance_sessions")

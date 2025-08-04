@@ -334,7 +334,8 @@ def check_ip_allowed(ip_address=None):
     Kiểm tra xem IP có nằm trong danh sách cho phép hay không.
     Nếu không truyền ip_address, sẽ kiểm tra IP của request hiện tại.
     """
-    allowed_ips = "113.162.208.236"
+    # allowed_ips = "113.162.208.236"
+    allowed_ips = "27.66.20.115" # IP nhà Quí
     if not ip_address:
         ip_address = request.remote_addr  
 
@@ -558,8 +559,10 @@ async def verify_student_access_flexible():
 
     # 2. Kiểm tra GPS
     if student_lat is not None and student_lon is not None:
-        CAMPUS_LAT = float(os.environ.get('CAMPUS_LAT', 10.799853))
-        CAMPUS_LON = float(os.environ.get('CAMPUS_LON', 106.654474))
+        CAMPUS_LAT = float(os.environ.get('CAMPUS_LAT', 10.729256761720086799853))
+        CAMPUS_LON = float(os.environ.get('CAMPUS_LON', 106.70934363989961))
+        # CAMPUS_LAT = float(os.environ.get('CAMPUS_LAT', 10.799853))
+        # CAMPUS_LON = float(os.environ.get('CAMPUS_LON', 106.654474))
         MAX_DISTANCE_METERS = 500  # Bán kính 500m
 
         distance_m = haversine_distance(student_lon, student_lat, CAMPUS_LON, CAMPUS_LAT)
@@ -568,7 +571,7 @@ async def verify_student_access_flexible():
     
     print(f"INFO:     Kết quả kiểm tra IP: {is_ip_ok}, GPS: {is_gps_ok}")
     # 3. Quyết định cấp quyền truy cập
-    if is_ip_ok or is_gps_ok:
+    if is_ip_ok and is_gps_ok:
         return jsonify({
             "accessGranted": True,
             "reason": "Xác thực thành công."
