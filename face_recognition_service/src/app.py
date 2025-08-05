@@ -322,6 +322,12 @@ def add_student_and_train():
         if not os.path.exists(student_raw_dir):
             os.makedirs(student_raw_dir)
             print(f"Đã tạo thư mục: {student_raw_dir}")
+        if not os.path.exists(student_train_dir):
+            os.makedirs(student_train_dir)
+            print(f"Đã tạo thư mục: {student_train_dir}")
+        if not os.path.exists(student_test_dir):
+            os.makedirs(student_test_dir)
+            print(f"Đã tạo thư mục: {student_test_dir}")
 
         for i, training_images_b64 in enumerate(training_images_b64):
             # Tách phần tiền tố 'data:image/jpeg;base64,'
@@ -345,7 +351,7 @@ def add_student_and_train():
             file_path_test = os.path.join(student_test_dir, f"{student_id}_{i + 1}.jpg")
             with open(file_path_test, "wb") as fh:
                 fh.write(base64.b64decode(image_data))
-                
+
         print(f"Đã lưu thành công {len(images_base64)} ảnh cho sinh viên {student_id}.")
     except Exception as e:
         print(f"Lỗi khi lưu ảnh cho {student_id}: {e}")
