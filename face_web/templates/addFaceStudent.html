@@ -192,7 +192,7 @@
         const imagePreviewContainer = document.getElementById('image-preview-container');
 
 
-        const TOTAL_IMAGES = 200;
+        const TOTAL_IMAGES = 250;
         let isCapturing = false;
 
         // --- Các bước hướng dẫn chụp ảnh ---
@@ -202,6 +202,7 @@
             { instruction: "Từ từ quay đầu sang PHẢI", end: 120 },
             { instruction: "Từ từ ngước mặt lên TRÊN", end: 160 },
             { instruction: "Từ từ cúi mặt xuống DƯỚI", end: 200 }
+            { instruction: "Lấy ảnh để thử nghiệm", end: 250 }
         ];
         let lastInstruction = "";
 
@@ -271,7 +272,7 @@
             showStatus('Đã chụp xong. Đang gửi dữ liệu và huấn luyện...', 'info');
             
             // --- Gửi dữ liệu đến API Backend ---
-            await sendDataToBackend(studentId fullName, capturedImages);
+            await sendDataToBackend(studentId, fullName, capturedImages);
 
             isCapturing = false;
         });
