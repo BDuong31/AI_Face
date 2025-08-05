@@ -296,7 +296,7 @@
                 if (response.ok && result.success) {
                     showStatus(`Thành công! ${result.message}`, 'success');
                     try {
-                        const responeseSV = await fetch('http/localhost:3000/api/student/create', {
+                        const responeseSV = await fetch('http://localhost:3000/api/student/create', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
