@@ -484,6 +484,45 @@ async def add_face_student_page():
     return render_template('addFaceStudent.html')
 
 # --- API Xác Thực ---
+# API tạo mới cho sinh viên
+@flask_app.route('/api/student/create', methods=['POST'])
+async def create_student():
+    """
+        Xử lý tạo mới sinh viên.
+        Nhận thông tin sinh viên từ request body và lưu vào cơ sở dữ liệu.
+    """
+    data = request.get_json()
+
+    # Kiểm tra xem dữ liệu có đầy đủ không
+    if not data or not data.get('student_id') or not data.get('name'):
+        return jsonify({'message': 'Thiếu mã số hoặc tên'}), 400
+
+    student_id = data.get('student_id')
+    name = data.get('name')
+    # Kiểm tra xem sinh viên đã tồn tại chưa
+    existing_student = await prisma.student.find_first(
+        where={
+            'studentCode': student_id,
+        }
+    )
+
+    if existing_student:
+        return jsonify({'message': 'Sinh viên đã tồn tại'}), 409
+
+    # Tạo mới sinh viên
+    new_student = await prisma.student.create(
+        data={
+            'studentCode': student_id,
+            'name': name,
+            'password': "123456"
+        }
+    )
+
+    return jsonify({
+        'message': 'Tạo mới sinh viên thành công',
+        'student_id': new_student.id,
+        'name': new_student.name
+    }), 201
 
 # API đăng nhập cho sinh viên
 @flask_app.route('/api/student/login', methods=['POST'])
