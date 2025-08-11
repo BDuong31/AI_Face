@@ -146,8 +146,13 @@
                 </div>
 
                 <div>
-                    <label for="user-name" class="block text-sm font-medium text-slate-700 mb-2">Mã số sinh viên</label>
-                    <input type="text" id="user-name" name="user-name" required class="w-full px-4 py-3 bg-white/50 border border-slate-300/70 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none smooth-transition" placeholder="Nhập mã số sinh viên" />
+                    <label for="full-name" class="block text-sm font-medium text-slate-700 mb-2">Họ và tên</label>
+                    <input type="text" id="full-name" name="full-name" required class="w-full px-4 py-3 bg-white/50 border border-slate-300/70 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none smooth-transition" placeholder="Nhập họ và tên" />
+                </div>
+
+                <div>
+                    <label for="student-id" class="block text-sm font-medium text-slate-700 mb-2">Mã số sinh viên</label>
+                    <input type="text" id="student-id" name="student-id" required class="w-full px-4 py-3 bg-white/50 border border-slate-300/70 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none smooth-transition" placeholder="Nhập mã số sinh viên" />
                 </div>
                 
                 <div id="progress-container" class="hidden w-full bg-slate-200 rounded-full h-6 overflow-hidden">
@@ -175,7 +180,8 @@
         const canvas = document.getElementById('capture-canvas');
         const startCaptureBtn = document.getElementById('start-capture-btn');
         const buttonText = document.getElementById('button-text');
-        const userNameInput = document.getElementById('user-name');
+        const userNameInput = document.getElementById('student-id');
+        const fullNameInput = document.getElementById('full-name');
         const statusBox = document.getElementById('status-box');
         const statusIcon = document.getElementById('status-icon');
         const statusMessage = document.getElementById('status-message');
@@ -186,7 +192,7 @@
         const imagePreviewContainer = document.getElementById('image-preview-container');
 
 
-        const TOTAL_IMAGES = 200;
+        const TOTAL_IMAGES = 250;
         let isCapturing = false;
 
         // --- Các bước hướng dẫn chụp ảnh ---
@@ -195,7 +201,8 @@
             { instruction: "Từ từ quay đầu sang TRÁI", end: 80 },
             { instruction: "Từ từ quay đầu sang PHẢI", end: 120 },
             { instruction: "Từ từ ngước mặt lên TRÊN", end: 160 },
-            { instruction: "Từ từ cúi mặt xuống DƯỚI", end: 200 }
+            { instruction: "Từ từ cúi mặt xuống DƯỚI", end: 200 },
+            { instruction: "Lấy ảnh để thử nghiệm", end: 250 }
         ];
         let lastInstruction = "";
 
@@ -224,6 +231,7 @@
             if (isCapturing) return;
 
             const studentId = userNameInput.value.trim();
+            const fullName = fullNameInput.value.trim();
             if (studentId === '') {
                 showStatus('Vui lòng nhập tên hoặc mã số sinh viên trước khi chụp.', 'error');
                 userNameInput.focus();
@@ -264,13 +272,13 @@
             showStatus('Đã chụp xong. Đang gửi dữ liệu và huấn luyện...', 'info');
             
             // --- Gửi dữ liệu đến API Backend ---
-            await sendDataToBackend(studentId, capturedImages);
+            await sendDataToBackend(studentId, fullName, capturedImages);
 
             isCapturing = false;
         });
         
         // --- 3. Gửi dữ liệu đến Backend API ---
-        async function sendDataToBackend(studentId, images) {
+        async function sendDataToBackend(studentId, fullName, images) {
             try {
                 const response = await fetch('http://localhost:5001/add_student_and_train', {
                     method: 'POST',
@@ -287,6 +295,21 @@
 
                 if (response.ok && result.success) {
                     showStatus(`Thành công! ${result.message}`, 'success');
+                    try {
+                        const responeseSV = await fetch('http://localhost:3000/api/student/create', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                studentId: studentId,
+                                name: fullName
+                            }),
+                        })
+                    }
+                    catch (error) {
+                        console.error('Lỗi khi xử lý kết quả:', error);
+                    }
                 } else {
                     // Hiển thị lỗi từ server
                     showStatus(`Lỗi từ máy chủ: ${result.message || 'Không có thông báo lỗi cụ thể.'}`, 'error');

@@ -38,7 +38,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 RAW_DATA_DIR = BASE_DIR / 'Dataset' / 'FaceData' / 'raw'
 PROCESSED_DATA_DIR = BASE_DIR / 'Dataset' / 'FaceData' / 'processed'
+TEST_DATA_DIR = BASE_DIR / 'Dataset' / 'FaceData' / 'test'
+TRAIN_DATA_DIR = BASE_DIR / 'Dataset' / 'FaceData' / 'train'
 MODELS_DIR = BASE_DIR / 'Models'
+MTCNN_DIR = BASE_DIR / 'src' / 'align'
 
 ALIGN_SCRIPT = BASE_DIR / 'src/align_dataset_mtcnn.py'
 CLASSIFIER_SCRIPT = BASE_DIR / 'src/classifier.py'
@@ -51,11 +54,11 @@ CLASSIFIER_PATH = r'C:\Users\ASUS\Desktop\AI_Face\face_recognition_service\Model
 FACENET_MODEL_PATH = r'C:\Users\ASUS\Desktop\AI_Face\face_recognition_service\Models\20180402-114759.pb'
 # ### DEBUG ###: Verify this directory and its contents
 MTCNN_MODEL_DIR = r'C:\Users\ASUS\Desktop\AI_Face\face_recognition_service\src\align'
-print(f"### DEBUG ###: Kiểm tra thư mục: {MTCNN_MODEL_DIR}")
-if not os.path.isdir(MTCNN_MODEL_DIR):
+print(f"### DEBUG ###: Kiểm tra thư mục: {MTCNN_DIR}")
+if not os.path.isdir(MTCNN_DIR):
     print(f"### DEBUG ###: ERROR - MTCNN_MODEL_DIR không tồn tại hoặc không phải là thư mục!")
 else:
-    print(f"### DEBUG ###: Nội dung của MTCNN_MODEL_DIR: {os.listdir(MTCNN_MODEL_DIR)}")
+    print(f"### DEBUG ###: Nội dung của MTCNN_MODEL_DIR: {os.listdir(MTCNN_DIR)}")
 
 
 # --- Load Models ---
@@ -65,7 +68,7 @@ with tf_graph.as_default():
     gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.6)
     tf_sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
     with tf_sess.as_default():
-        facenet.load_model(FACENET_MODEL_PATH)
+        facenet.load_model(PB_MODEL_FILE)
         images_placeholder = tf.compat.v1.get_default_graph().get_tensor_by_name("input:0")
         embeddings = tf.compat.v1.get_default_graph().get_tensor_by_name("embeddings:0")
         phase_train_placeholder = tf.compat.v1.get_default_graph().get_tensor_by_name("phase_train:0")
@@ -74,17 +77,17 @@ with tf_graph.as_default():
 
         print("Đang tải mô hình MTCNN...")
         try:
-            pnet, rnet, onet = align.detect_face.create_mtcnn(tf_sess, MTCNN_MODEL_DIR)
+            pnet, rnet, onet = align.detect_face.create_mtcnn(tf_sess, MTCNN_DIR)
             print("Mô hình MTCNN đã được tải thành công.")
         except Exception as e_mtcnn_load:
             print(f"### DEBUG ###: LỖI NGHIÊM TRỌNG khi tải MTCNN models: {e_mtcnn_load}")
             pnet, rnet, onet = None, None, None # Ensure they are None if loading failed
 
-print(f"Đang tải mô hình phân loại từ {CLASSIFIER_PATH}...")
-if not os.path.exists(CLASSIFIER_PATH):
-    print(f"Error: Mô hình phân loại không tồn tại tại {CLASSIFIER_PATH}")
+print(f"Đang tải mô hình phân loại từ {PKL_MODEL_FILE}...")
+if not os.path.exists(PKL_MODEL_FILE):
+    print(f"Error: Mô hình phân loại không tồn tại tại {PKL_MODEL_FILE}")
     sys.exit(1) # Or handle more gracefully if this is a non-critical part for pure detection
-with open(CLASSIFIER_PATH, 'rb') as infile:
+with open(PKL_MODEL_FILE, 'rb') as infile:
     model, class_names = pickle.load(infile)
 print("Mô hình phân loại đã được tải thành công.")
 print(f"Tên lớp: {class_names}")
@@ -304,6 +307,8 @@ def add_student_and_train():
         
         student_id = data['studentId']
         images_base64 = data['images']
+        training_images_b64 = images_base64[:200]
+        testing_images_b64 = images_base64[200:]
         print(f"Nhận được yêu cầu cho sinh viên: {student_id} với {len(images_base64)} ảnh.")
 
     except Exception as e:
@@ -311,17 +316,42 @@ def add_student_and_train():
 
     # --- BƯỚC 1: LƯU ẢNH ---
     student_raw_dir = RAW_DATA_DIR / str(student_id)
+    student_train_dir = TRAIN_DATA_DIR / str(student_id)
+    student_test_dir = TEST_DATA_DIR / str(student_id)
     try:
         if not os.path.exists(student_raw_dir):
             os.makedirs(student_raw_dir)
             print(f"Đã tạo thư mục: {student_raw_dir}")
+        if not os.path.exists(student_train_dir):
+            os.makedirs(student_train_dir)
+            print(f"Đã tạo thư mục: {student_train_dir}")
+        if not os.path.exists(student_test_dir):
+            os.makedirs(student_test_dir)
+            print(f"Đã tạo thư mục: {student_test_dir}")
 
-        for i, image_b64 in enumerate(images_base64):
+        for i, training_images_b64 in enumerate(training_images_b64):
             # Tách phần tiền tố 'data:image/jpeg;base64,'
-            image_data = image_b64.split(",")[1]
+            image_data = training_images_b64.split(",")[1]
+
+            # Lưu ảnh vào thư mục raw
             file_path = os.path.join(student_raw_dir, f"{student_id}_{i + 1}.jpg")
             with open(file_path, "wb") as fh:
                 fh.write(base64.b64decode(image_data))
+
+            # Lưu ảnh vào thư mục train 
+            file_path_train = os.path.join(student_train_dir, f"{student_id}_{i + 1}.jpg")
+            with open(file_path_train, "wb") as fh:
+                fh.write(base64.b64decode(image_data))
+
+        for i, testing_images_b64 in enumerate(testing_images_b64):
+            # Tách phần tiền tố 'data:image/jpeg;base64,'
+            image_data = testing_images_b64.split(",")[1]
+
+            # Lưu ảnh vào thư mục test
+            file_path_test = os.path.join(student_test_dir, f"{student_id}_{i + 1}.jpg")
+            with open(file_path_test, "wb") as fh:
+                fh.write(base64.b64decode(image_data))
+
         print(f"Đã lưu thành công {len(images_base64)} ảnh cho sinh viên {student_id}.")
     except Exception as e:
         print(f"Lỗi khi lưu ảnh cho {student_id}: {e}")
