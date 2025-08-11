@@ -397,3 +397,5 @@ SELECT * FROM students;
 python -m prisma generate
 
 http://localhost:3000/
+
+ cd face_recognition_service

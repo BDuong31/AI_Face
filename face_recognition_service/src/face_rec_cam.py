@@ -19,63 +19,16 @@ import cv2
 import collections
 from sklearn.svm import SVC
 from flask import Flask
-from flask_socketio import SocketIO
-from socketio import Client
 from dotenv import load_dotenv
 import datetime
-import socketio
-
-# Khởi tạo Flask app
-app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')
-socketio_client = socketio.Client()
-
-attendance_success = False
-
-# attendance_log = {}
-
-# def check_attendance(MSSV):
-#     today = str(datetime.date.today())
-
-#     # Nếu ngày hôm nay chưa tồn tại trong attendance_log, khởi tạo một set mới
-#     if today not in attendance_log:
-#         attendance_log[today] = set()
-
-#     # Kiểm tra nếu MSSV đã có trong set của ngày hôm nay
-#     if MSSV in attendance_log[today]:
-#         print(f"Sinh viên {MSSV} đã điểm danh hôm nay.")
-#         return False
-#     else:
-#         # Nếu chưa điểm danh, thêm MSSV vào set và trả về True
-#         attendance_log[today].add(MSSV)
-#         print(f"Sinh viên {MSSV} được điểm danh.")
-#         return True
 
 
-@socketio_client.on('stop_camera')
-def on_stop_camera(data):
-    print("Stopping camera...")
-    sys.exit(0)
 
 def main():
 
-    attendance_success = False
-    # Kết nối đến server
-    try:
-        socketio_client.connect('http://127.0.0.1:5000')
-        print("Connected to server successfully.")
-    except Exception as e:
-        print(f"Connection error: {e}")
-        return
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', help='Path of the video you want to test on.', default=0)
-    parser.add_argument("date", type=str, help="Date in YYYY-MM-DD format")
-    parser.add_argument("classId", type=str, help="Class ID")
     args = parser.parse_args()
-    
-    date = args.date
-    classId = args.classId
 
     MINSIZE = 20 # nếu khuôn mặt nhỏ hơn kích thước 20 pixel ( bỏ qua )
     THRESHOLD = [0.6, 0.7, 0.7] # quét qua hình ảnh và đưa ra các dự đoán về các vùng có thể chứa khuôn mặt.
@@ -168,8 +121,8 @@ def main():
                                 best_name = class_names[best_class_indices[0]]
                                 print("Name: {}, Probability: {}".format(best_name, best_class_probabilities))
 
-                                # Nếu xác suất dự đoán lớn hơn 0.8, vẽ hình chữ nhật quanh khuôn mặt và hiển thị tên cùng xác suất. Gửi thông tin điểm danh qua SocketIO.
-                                if best_class_probabilities > 0.8:
+                                # Nếu xác suất dự đoán lớn hơn 0.9, vẽ hình chữ nhật quanh khuôn mặt và hiển thị tên cùng xác suất. Gửi thông tin điểm danh qua SocketIO.
+                                if best_class_probabilities > 0.9:
                                     cv2.rectangle(frame, (bb[i][0], bb[i][1]), (bb[i][2], bb[i][3]), (0, 255, 0), 2)
                                     text_x = bb[i][0]
                                     text_y = bb[i][3] + 20
@@ -179,16 +132,6 @@ def main():
                                     cv2.putText(frame, str(round(best_class_probabilities[0], 3)), (text_x, text_y + 17),
                                                 cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255), thickness=1, lineType=2)
                                     
-                                    socketio_client.emit('response', {"success": True,"MSSV": best_name, "date": date, "classId": classId},)
-                                    attendance_success = True
-
-                                    # # Gửi thông báo qua SocketIO nếu chưa điểm danh hôm nay
-                                    # if check_attendance(best_name):
-                                    #     socketio_client.emit('response', {"MSSV": best_name})
-                                    #     print(f"Đã gửi socket điểm danh cho sinh viên: {name} (MSSV: {best_name})")
-                                    # else:
-                                    #     print(f"Sinh viên {name} (MSSV: {best_name}) đã điểm danh trước đó.")
-
                                 else:
                                     name = "Unknown"
                 except Exception as e:
