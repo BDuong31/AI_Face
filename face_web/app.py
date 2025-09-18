@@ -1,6 +1,5 @@
 import os
 import jwt
-import nest_asyncio # THÊM VÀO: Import nest_asyncio
 import base64
 import asyncio
 import requests
@@ -56,9 +55,6 @@ class ConnectionManager:
 
 # Tạo một instance của ConnectionManager để quản lý kết nối WebSocket
 manager = ConnectionManager()
-
-# THÊM VÀO: Sửa lỗi asyncio event loop đã được chạy
-nest_asyncio.apply()
 
 # THÊM VÀO: Tải biến môi trường từ file .env
 load_dotenv()
